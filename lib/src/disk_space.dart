@@ -38,9 +38,10 @@ class DiskSpace {
           disks.add(new Disk(
               devicePath, mountPath, totalSize, usedSpace, availableSpace));
         }
-        
+
         //orders from longer mountpath to shorter mountpath, very important as getDisk would break otherise
-        disks.sort((disk2, disk1) => disk1._mountPath.length.compareTo(disk2._mountPath.length));
+        disks.sort((disk2, disk1) =>
+            disk1._mountPath.length.compareTo(disk2._mountPath.length));
       }
       //throws exception if df doesnt exist
       else
@@ -68,39 +69,8 @@ class DiskSpace {
           entity.absolute.path.startsWith(disk._devicePath)) return disk;
     }
 
-      throw new NotFoundException(
-          "Unable to get information about disk which contains " + path);
-
-  }
-}
-
-class Disk {
-  //Original device path such as \\nasdrive or C:\ on windows and /dev/sdX on Linux
-  String _devicePath;
-  String get devicePath => _devicePath;
-
-  //Path where this device is mounted such as Z:\ on windows and /mount/user/disk on Linux
-  String _mountPath;
-  String get mountPath => _mountPath;
-
-  //Disk's total size in bytes
-  int _totalSize;
-  int get totalSize => _totalSize;
-
-  //Disk's used space in bytes
-  int _usedSpace;
-  int get usedSpace => _usedSpace;
-
-  //Disk's available space in bytes
-  int _availableSpace;
-  int get availableSpace => _availableSpace;
-
-  Disk(devicePath, mountPath, totalSize, usedSpace, availableSpace) {
-    this._devicePath = devicePath;
-    this._mountPath = mountPath;
-    this._totalSize = totalSize;
-    this._usedSpace = usedSpace;
-    this._availableSpace = availableSpace;
+    throw new NotFoundException(
+        "Unable to get information about disk which contains " + path);
   }
 }
 
