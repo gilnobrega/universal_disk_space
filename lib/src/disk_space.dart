@@ -5,6 +5,8 @@ import 'exceptions.dart';
 import 'disk.dart';
 
 class DiskSpace {
+  final int blockSize = 1000; //1kb blocks
+
   final RegExp dfRegex = new RegExp(
       "\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)",
       caseSensitive: false,
@@ -21,20 +23,16 @@ class DiskSpace {
       if (io.File(dfLocation).existsSync()) {
         String output = runCommand(dfLocation, []);
 
-        print(output);
-
         List<RegExpMatch> matches = dfRegex.allMatches(output).toList();
 
         //Example /dev/sdb1        107132516   93716396    7931016  93% /
         for (RegExpMatch match in matches) {
-          int blockSize = 1000; //1kb blocks
+          String devicePath = match.group(1) ?? '';
+          String mountPath = match.group(6) ?? '';
 
-          String devicePath = match.group(1);
-          String mountPath = match.group(6);
-
-          int totalSize = int.parse(match.group(2)) * blockSize;
-          int usedSpace = int.parse(match.group(3)) * blockSize;
-          int availableSpace = int.parse(match.group(4)) * blockSize;
+          int totalSize = int.parse(match.group(2) ?? '0') * blockSize;
+          int usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
+          int availableSpace = int.parse(match.group(4) ?? '0') * blockSize;
 
           disks.add(new Disk(
               devicePath, mountPath, totalSize, usedSpace, availableSpace));
@@ -75,7 +73,7 @@ class DiskSpace {
   }
 }
 
-String runCommand(binPath, [List<String> args]) {
+String runCommand(binPath, List<String> args) {
   var output = io.Process.runSync(binPath, args);
   return output.stdout;
 }

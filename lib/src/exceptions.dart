@@ -1,7 +1,7 @@
 //https://www.woolha.com/tutorials/dart-creating-custom-exception-class
 
 class NotFoundException implements Exception {
-  String _message;
+  String _message = '';
 
   NotFoundException([String message = "Failed to locate path."]) {
     this._message = message;
@@ -14,7 +14,7 @@ class NotFoundException implements Exception {
 }
 
 class DiskInfoError implements Exception {
-  String _message;
+  String _message = '';
 
   DiskInfoError([String message = "Failed to get disk info."]) {
     this._message = message;
