@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:io' as io;
 
 import 'exceptions.dart';
+import 'disk.dart';
 
 class DiskSpace {
   final RegExp dfRegex = new RegExp(
@@ -41,7 +42,7 @@ class DiskSpace {
 
         //orders from longer mountpath to shorter mountpath, very important as getDisk would break otherise
         disks.sort((disk2, disk1) =>
-            disk1._mountPath.length.compareTo(disk2._mountPath.length));
+            disk1.mountPath.length.compareTo(disk2.mountPath.length));
       }
       //throws exception if df doesnt exist
       else
@@ -66,7 +67,7 @@ class DiskSpace {
 
     for (Disk disk in disks) {
       if (entity.absolute.path.startsWith(disk.mountPath) ||
-          entity.absolute.path.startsWith(disk._devicePath)) return disk;
+          entity.absolute.path.startsWith(disk.devicePath)) return disk;
     }
 
     throw new NotFoundException(
