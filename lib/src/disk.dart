@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Disk {
   //Original device path such as \\nasdrive or C:\ on windows and /dev/sdX on Linux
   String _devicePath = "";
@@ -26,4 +28,16 @@ class Disk {
     this._usedSpace = usedSpace ?? 0;
     this._availableSpace = availableSpace ?? 0;
   }
+
+  Map toJson() => {
+    'mountPath': mountPath,
+    'devicePath': devicePath,
+    'totalSize': totalSize,
+    'usedSpace': usedSpace,
+    'availableSpace': availableSpace
+  };
+
+  String toString() {
+    return jsonEncode(this);
+  } 
 }
