@@ -5,7 +5,7 @@ import 'exceptions.dart';
 import 'disk.dart';
 
 class DiskSpace {
-  final int blockSize = 1000; //1kb blocks
+  final int blockSize = 1000; //default df block size - 1kb blocks
 
   final RegExp dfRegex = new RegExp(
       "\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)",
@@ -93,6 +93,7 @@ class DiskSpace {
   {
     io.FileSystemEntity entity;
 
+    //throws exception if file doesn't exist
     if (io.File(path).existsSync())
       entity = io.File(path);
     else if (io.Directory(path).existsSync())
@@ -101,6 +102,7 @@ class DiskSpace {
       throw new NotFoundException(
           "Could not locate the following file or directory: " + path);
 
+    //if file exists then it searches for its disk in the list of disks
     for (Disk disk in disks) {
       if (entity.absolute.path.startsWith(disk.mountPath) ||
           entity.absolute.path.startsWith(disk.devicePath)) return disk;
