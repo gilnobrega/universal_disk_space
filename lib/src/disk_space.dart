@@ -13,11 +13,11 @@ class DiskSpace {
       multiLine: true);
   final String dfLocation = "/usr/bin/df";
 
-  final RegExp wmicRegex = new RegExp("(\w:)[ ]+([0-9]+)[ ]+([0-9]+)",
+  final RegExp wmicRegex = new RegExp("([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)",
       caseSensitive: false, multiLine: true);
   final String wmicLocation = "C:\\Windows\\System32\\wbem\\wmic.exe";
 
-  final RegExp netRegex = new RegExp("..[ ]+(\w:)[ ]+([^\n]+)",
+  final RegExp netRegex = new RegExp("..[ ]+([A-Z]:)[ ]+([^ \r\n]+)",
       caseSensitive: false, multiLine: true);
   final String netLocation = "C:\\Windows\\System32\\net.exe";
 
@@ -55,7 +55,7 @@ class DiskSpace {
     else if (io.Platform.isWindows) {
       if (io.File(wmicLocation).existsSync()) {
         String output = runCommand(wmicLocation,
-            ["logicalDisk", "get", "freespace,", "size,", "caption"]);
+            ["logicalDisk", "get", "freespace,", "size,", "caption"]).replaceAll("\r", "");
         List<RegExpMatch> matches = wmicRegex.allMatches(output).toList();
 
         String netOutput = runCommand(netLocation, ["use"]);
@@ -63,19 +63,19 @@ class DiskSpace {
 
         //Example  C:       316204883968   499013238784
         for (RegExpMatch match in matches) {
-          String devicePath = match.group(1).toUpperCase() ?? ''; // C: or Z:
+          String devicePath = match.group(1) ?? ''; // C: or Z:
           String mountPath = devicePath;
 
           //If is network drive then mountpath will be of the form \\nasdrive\something
           if (netMatches
-              .any((netMatch) => netMatch.group(1).toUpperCase() == devicePath))
+              .any((netMatch) => netMatch.group(1) == devicePath))
             mountPath = netMatches
                 .firstWhere(
-                    (netMatch) => netMatch.group(1).toUpperCase() == devicePath)
-                .group(2);
+                    (netMatch) => netMatch.group(1) == devicePath)
+                .group(2) ?? '';
 
-          int totalSize = int.parse(match.group(3) ?? '0') * blockSize;
-          int availableSpace = int.parse(match.group(2) ?? '0') * blockSize;
+          int totalSize = int.parse(match.group(3) ?? '0');
+          int availableSpace = int.parse(match.group(2) ?? '0');
           int usedSpace = totalSize - availableSpace;
 
           disks.add(new Disk(
