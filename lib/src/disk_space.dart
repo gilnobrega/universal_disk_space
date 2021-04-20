@@ -115,8 +115,17 @@ class DiskSpace {
 
     //if file exists then it searches for its disk in the list of disks
     for (Disk disk in disks) {
-      if (entity.absolute.path.toUpperCase().startsWith(disk.mountPath.toUpperCase()) ||
-          entity.absolute.path.toUpperCase().startsWith(disk.devicePath.toUpperCase())) return disk;
+      if (io.Platform.isWindows) {
+        if (entity.absolute.path
+                .toUpperCase() //Must convert both sides to upper case since Window's paths are case invariant
+                .startsWith(disk.mountPath.toUpperCase()) ||
+            entity.absolute.path
+                .toUpperCase()
+                .startsWith(disk.devicePath.toUpperCase())) return disk;
+      } else if (io.Platform.isLinux || io.Platform.isMacOS) {
+        if (entity.absolute.path.startsWith(disk.mountPath) ||
+            entity.absolute.path.startsWith(disk.devicePath)) return disk;
+      }
     }
 
     throw new NotFoundException(
