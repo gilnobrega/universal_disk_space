@@ -11,7 +11,7 @@ class DiskSpace {
       "\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)",
       caseSensitive: false,
       multiLine: true);
-  final String dfLocation = "/usr/bin/env"; 
+  final String dfLocation = "/usr/bin/env";
   // /usr/bin/env df points to df in every UNIX system
 
   final RegExp wmicRegex = new RegExp("([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)",
@@ -55,8 +55,13 @@ class DiskSpace {
     //Windows code
     else if (io.Platform.isWindows) {
       if (io.File(wmicLocation).existsSync()) {
-        String output = runCommand(wmicLocation,
-            ["logicalDisk", "get", "freespace,", "size,", "caption"]).replaceAll("\r", "");
+        String output = runCommand(wmicLocation, [
+          "logicalDisk",
+          "get",
+          "freespace,",
+          "size,",
+          "caption"
+        ]).replaceAll("\r", "");
         List<RegExpMatch> matches = wmicRegex.allMatches(output).toList();
 
         String netOutput = runCommand(netLocation, ["use"]);
@@ -68,19 +73,21 @@ class DiskSpace {
           String mountPath = devicePath;
 
           //If is network drive then mountpath will be of the form \\nasdrive\something
-          if (netMatches
-              .any((netMatch) => netMatch.group(1) == devicePath))
+          if (netMatches.any((netMatch) => netMatch.group(1) == devicePath))
             mountPath = netMatches
-                .firstWhere(
-                    (netMatch) => netMatch.group(1) == devicePath)
-                .group(2) ?? '';
+                    .firstWhere((netMatch) => netMatch.group(1) == devicePath)
+                    .group(2) ??
+                '';
 
           int totalSize = int.parse(match.group(3) ?? '0');
           int availableSpace = int.parse(match.group(2) ?? '0');
           int usedSpace = totalSize - availableSpace;
 
-          disks.add(new Disk(
-              devicePath, mountPath, totalSize, usedSpace, availableSpace));
+          io.Directory mountDir = io.Directory(mountPath);
+
+          if (mountDir.existsSync())
+            disks.add(new Disk(devicePath, mountDir.absolute.path, totalSize,
+                usedSpace, availableSpace));
         }
       }
     }
