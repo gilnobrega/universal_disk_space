@@ -11,7 +11,8 @@ class DiskSpace {
       "\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)",
       caseSensitive: false,
       multiLine: true);
-  final String dfLocation = "/usr/bin/df";
+  final String dfLocation = "/usr/bin/env"; 
+  // /usr/bin/env df points to df in every UNIX system
 
   final RegExp wmicRegex = new RegExp("([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)",
       caseSensitive: false, multiLine: true);
@@ -25,11 +26,11 @@ class DiskSpace {
   List<Disk> disks = [];
 
   DiskSpace() {
-    //Linux code
-    if (io.Platform.isLinux) {
+    //Linux code  -- macOS should work in theory??
+    if (io.Platform.isLinux || io.Platform.isMacOS) {
       //runs df if binary exists
       if (io.File(dfLocation).existsSync()) {
-        String output = runCommand(dfLocation, []);
+        String output = runCommand(dfLocation, ['df']);
 
         List<RegExpMatch> matches = dfRegex.allMatches(output).toList();
 
