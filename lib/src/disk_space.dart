@@ -115,8 +115,8 @@ class DiskSpace {
 
     //if file exists then it searches for its disk in the list of disks
     for (Disk disk in disks) {
-      if (entity.absolute.path.startsWith(disk.mountPath) ||
-          entity.absolute.path.startsWith(disk.devicePath)) return disk;
+      if (entity.absolute.path.toUpperCase().startsWith(disk.mountPath.toUpperCase()) ||
+          entity.absolute.path.toUpperCase().startsWith(disk.devicePath.toUpperCase())) return disk;
     }
 
     throw new NotFoundException(
