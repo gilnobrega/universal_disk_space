@@ -43,8 +43,11 @@ class DiskSpace {
           int usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
           int availableSpace = int.parse(match.group(4) ?? '0') * blockSize;
 
-          disks.add(new Disk(
-              devicePath, mountPath, totalSize, usedSpace, availableSpace));
+          io.Directory mountDir = io.Directory(mountPath);
+
+          if (mountDir.existsSync())
+            disks.add(new Disk(devicePath, mountDir.absolute.path, totalSize,
+                usedSpace, availableSpace));
         }
       }
       //throws exception if df doesnt exist
