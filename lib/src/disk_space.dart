@@ -5,7 +5,7 @@ import 'exceptions.dart';
 import 'disk.dart';
 
 class DiskSpace {
-  final int blockSize = 1000; //default df block size - 1kb blocks
+  final int blockSize = 1024; //default df block size - 1K (1024) blocks
 
   final RegExp dfRegex = new RegExp(
       "\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)",
