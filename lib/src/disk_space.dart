@@ -7,18 +7,18 @@ import 'disk.dart';
 class DiskSpace {
   final int blockSize = 1024; //default df block size - 1K (1024) blocks
 
-  final RegExp dfRegex = new RegExp(
+  final RegExp dfRegex = RegExp(
       "\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)",
       caseSensitive: false,
       multiLine: true);
   final String dfLocation = "/usr/bin/env";
   // /usr/bin/env df points to df in every UNIX system
 
-  final RegExp wmicRegex = new RegExp("([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)",
+  final RegExp wmicRegex = RegExp("([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)",
       caseSensitive: false, multiLine: true);
   final String wmicLocation = "C:\\Windows\\System32\\wbem\\wmic.exe";
 
-  final RegExp netRegex = new RegExp("..[ ]+([A-Z]:)[ ]+([^ \r\n]+)",
+  final RegExp netRegex = RegExp("..[ ]+([A-Z]:)[ ]+([^ \r\n]+)",
       caseSensitive: false, multiLine: true);
   final String netLocation = "C:\\Windows\\System32\\net.exe";
 
@@ -46,13 +46,13 @@ class DiskSpace {
           io.Directory mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync())
-            disks.add(new Disk(devicePath, mountDir.absolute.path, totalSize,
+            disks.add(Disk(devicePath, mountDir.absolute.path, totalSize,
                 usedSpace, availableSpace));
         }
       }
       //throws exception if df doesnt exist
       else
-        throw new NotFoundException(
+        throw NotFoundException(
             "Could not locate df binary in " + dfLocation);
     }
     //Windows code
@@ -89,7 +89,7 @@ class DiskSpace {
           io.Directory mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync())
-            disks.add(new Disk(devicePath, mountDir.absolute.path, totalSize,
+            disks.add(Disk(devicePath, mountDir.absolute.path, totalSize,
                 usedSpace, availableSpace));
         }
       }
@@ -110,7 +110,7 @@ class DiskSpace {
     else if (io.Directory(path).existsSync())
       entity = io.Directory(path);
     else
-      throw new NotFoundException(
+      throw NotFoundException(
           "Could not locate the following file or directory: " + path);
 
     //if file exists then it searches for its disk in the list of disks
@@ -128,7 +128,7 @@ class DiskSpace {
       }
     }
 
-    throw new NotFoundException(
+    throw NotFoundException(
         "Unable to get information about disk which contains " + path);
   }
 }

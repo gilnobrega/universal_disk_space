@@ -1,7 +1,13 @@
+# 0.1.7
+- Added example.md
+- Removed unnecessary "new" keywords
+
 # 0.1.6 
+
 - Changed df block size to 1024 bytes
 
 # 0.1.5
+
 - Added README.md
 - Improved CHANGELOG.md
 
