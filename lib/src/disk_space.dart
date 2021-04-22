@@ -36,8 +36,8 @@ class DiskSpace {
 
         //Example /dev/sdb1        107132516   93716396    7931016  93% /
         for (var match in matches) {
-          var devicePath = match.group(1) ?? '';
-          var mountPath = match.group(6) ?? '';
+          var devicePath = match.group(1).trim() ?? '';
+          var mountPath = match.group(6).trim() ?? '';
 
           var totalSize = int.parse(match.group(2) ?? '0') * blockSize;
           var usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
@@ -74,14 +74,15 @@ class DiskSpace {
 
         //Example  C:       316204883968   499013238784
         for (var match in matches) {
-          var devicePath = match.group(1) ?? ''; // C: or Z:
+          var devicePath = match.group(1).trim() ?? ''; // C: or Z:
           var mountPath = devicePath;
 
           //If is network drive then mountpath will be of the form \\nasdrive\something
           if (netMatches.any((netMatch) => netMatch.group(1) == devicePath)) {
             mountPath = netMatches
                     .firstWhere((netMatch) => netMatch.group(1) == devicePath)
-                    .group(2) ??
+                    .group(2)
+                    .trim() ??
                 '';
           }
 
@@ -106,6 +107,7 @@ class DiskSpace {
 
   Disk getDisk(String path) //Gets info of disk of given path
   {
+    path = path.trim();
     io.FileSystemEntity entity;
 
     //throws exception if file doesn't exist
@@ -121,8 +123,10 @@ class DiskSpace {
     //if file exists then it searches for its disk in the list of disks
     for (var disk in disks) {
       if (io.Platform.isWindows) {
-        if (entity.absolute.path
-                .toUpperCase() //Must convert both sides to upper case since Window's paths are case invariant
+        if (entity.path.startsWith(disk.mountPath) ||
+            entity.path.startsWith(disk.devicePath) ||
+            entity.absolute.path
+                .toUpperCase() //Must convert both sides to upper case since Windows paths are case invariant
                 .startsWith(disk.mountPath.toUpperCase()) ||
             entity.absolute.path
                 .toUpperCase()
