@@ -1,3 +1,6 @@
+# 0.1.8
+- Formatted code according to pedantic's guidelines
+
 # 0.1.7
 - Added example.md
 - Removed unnecessary "new" keywords

@@ -3,8 +3,8 @@
 class NotFoundException implements Exception {
   String _message = '';
 
-  NotFoundException([String message = "Failed to locate path."]) {
-    this._message = message;
+  NotFoundException([String message = 'Failed to locate path.']) {
+    _message = message;
   }
 
   @override
@@ -16,8 +16,8 @@ class NotFoundException implements Exception {
 class DiskInfoError implements Exception {
   String _message = '';
 
-  DiskInfoError([String message = "Failed to get disk info."]) {
-    this._message = message;
+  DiskInfoError([String message = 'Failed to get disk info.']) {
+    _message = message;
   }
 
   @override
