@@ -18,7 +18,7 @@ class DiskSpace {
       caseSensitive: false, multiLine: true);
   final String wmicLocation = 'C:\\Windows\\System32\\wbem\\wmic.exe';
 
-  final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^ \r\n]+)',
+  final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
       caseSensitive: false, multiLine: true);
   final String netLocation = 'C:\\Windows\\System32\\net.exe';
 

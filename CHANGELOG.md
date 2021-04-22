@@ -1,3 +1,6 @@
+# 0.1.10
+- Fixed minor issue with parsing ``net use`` command in Windows
+
 # 0.1.9
 - Formatted code with ``dart format``
 - Moved example.md's code into example.dart
