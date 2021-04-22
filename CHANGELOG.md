@@ -1,3 +1,7 @@
+# 0.1.9
+- Formatted code with ``dart format``
+- Moved example.md's code into example.dart
+
 # 0.1.8
 - Formatted code according to pedantic's guidelines
 

@@ -21,7 +21,8 @@ class Disk {
   int _availableSpace = 0;
   int get availableSpace => _availableSpace;
 
-  Disk(String devicePath, String mountPath, int totalSize, int usedSpace, int availableSpace) {
+  Disk(String devicePath, String mountPath, int totalSize, int usedSpace,
+      int availableSpace) {
     _devicePath = devicePath ?? '';
     _mountPath = mountPath ?? '';
     _totalSize = totalSize ?? 0;

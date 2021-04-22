@@ -1,18 +1,15 @@
-# Example
-
-``` dart
 import 'package:universal_disk_space/universal_disk_space.dart';
 
-main () {
+void main () {
   //Initializes the diskspace class
   //Gets info about disks which are mounted
-  DiskSpace diskspace = new DiskSpace();
+  var diskspace = DiskSpace();
 
   //List of disks in the system
-  List<Disk> disks = diskspace.disks;
+  var disks = diskspace.disks;
 
   //Prints device path, mount path, total size,  about each disk in system
-  for (Disk disk in disks)
+  for (var disk in disks)
   {
       print(disk.devicePath); // e.g.: 'C:\' in Windows or '/dev/sdc' in Linux
       print(disk.mountPath); // e.g.: 'C:\' or '\\nasdrive' in Windows or '/' in Linux
@@ -23,9 +20,7 @@ main () {
   
   //Selects disk form diskspace.disks which contains '/home' folder
   //Also works with files
-  Disk homedisk = diskspace.getDisk('/home');
+  var homedisk = diskspace.getDisk('/home');
   print(homedisk); //prints serialized version of Disk which contains '/home'
   
 }
-
-```
