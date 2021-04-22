@@ -1,3 +1,6 @@
+# 0.1.11
+- Filters ``Microsoft Windows Network`` from the output of ``net use`` command
+
 # 0.1.10
 - Fixed minor issue with parsing ``net use`` command in Windows
 

@@ -68,7 +68,8 @@ class DiskSpace {
         ]).replaceAll('\r', '');
         var matches = wmicRegex.allMatches(output).toList();
 
-        var netOutput = runCommand(netLocation, ['use']);
+        var netOutput = runCommand(netLocation, ['use'])
+            .replaceAll('Microsoft Windows Network', '');
         var netMatches = netRegex.allMatches(netOutput).toList();
 
         //Example  C:       316204883968   499013238784
