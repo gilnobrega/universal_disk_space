@@ -93,7 +93,7 @@ class DiskSpace {
           var mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync()) {
-            disks.add(Disk(devicePath, mountDir.absolute.path, totalSize,
+            disks.add(Disk(devicePath, mountDir.path, totalSize,
                 usedSpace, availableSpace));
           }
         }

@@ -1,3 +1,6 @@
+# 0.1.13
+- Fixed bug with absolute mountpaths in Windows
+
 # 0.1.12
 - Trims whitespaces in paths
 
