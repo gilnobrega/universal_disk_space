@@ -1,3 +1,6 @@
+# 0.1.14
+- Formatted code with dart format
+
 # 0.1.13
 - Fixed bug with absolute mountpaths in Windows
 
