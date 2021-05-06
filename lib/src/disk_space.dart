@@ -20,12 +20,12 @@ class DiskSpace {
   final String dfLocation = '/usr/bin/env';
   // /usr/bin/env df points to df in every UNIX system
 
-  final RegExp wmicRegex =
-      RegExp('([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)', caseSensitive: false, multiLine: true);
+  final RegExp wmicRegex = RegExp('([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)',
+      caseSensitive: false, multiLine: true);
   final String wmicLocation = 'C:\\Windows\\System32\\wbem\\wmic.exe';
 
-  final RegExp netRegex =
-      RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)', caseSensitive: false, multiLine: true);
+  final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
+      caseSensitive: false, multiLine: true);
   final String netLocation = 'C:\\Windows\\System32\\net.exe';
 
   //List of disks in the system
@@ -60,8 +60,8 @@ class DiskSpace {
           var mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync()) {
-            disks.add(
-                Disk(devicePath, mountDir.absolute.path, totalSize, usedSpace, availableSpace));
+            disks.add(Disk(devicePath, mountDir.absolute.path, totalSize,
+                usedSpace, availableSpace));
           }
         }
       }
@@ -73,13 +73,17 @@ class DiskSpace {
     //Windows code
     else if (io.Platform.isWindows) {
       if (io.File(wmicLocation).existsSync()) {
-        var output =
-            runCommand(wmicLocation, ['logicalDisk', 'get', 'freespace,', 'size,', 'caption'])
-                .replaceAll('\r', '');
+        var output = runCommand(wmicLocation, [
+          'logicalDisk',
+          'get',
+          'freespace,',
+          'size,',
+          'caption'
+        ]).replaceAll('\r', '');
         var matches = wmicRegex.allMatches(output).toList();
 
-        var netOutput =
-            runCommand(netLocation, ['use']).replaceAll('Microsoft Windows Network', '');
+        var netOutput = runCommand(netLocation, ['use'])
+            .replaceAll('Microsoft Windows Network', '');
         var netMatches = netRegex.allMatches(netOutput).toList();
 
         //Example  C:       316204883968   499013238784
@@ -103,14 +107,16 @@ class DiskSpace {
           var mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync()) {
-            disks.add(Disk(devicePath, mountDir.path, totalSize, usedSpace, availableSpace));
+            disks.add(Disk(devicePath, mountDir.path, totalSize, usedSpace,
+                availableSpace));
           }
         }
       }
     }
 
     //orders from longer mountpath to shorter mountpath, very important as getDisk would break otherise
-    disks.sort((disk2, disk1) => disk1.mountPath.length.compareTo(disk2.mountPath.length));
+    disks.sort((disk2, disk1) =>
+        disk1.mountPath.length.compareTo(disk2.mountPath.length));
   }
 
   Disk getDisk(String path) //Gets info of disk of given path
@@ -124,7 +130,8 @@ class DiskSpace {
     } else if (io.Directory(path).existsSync()) {
       entity = io.Directory(path);
     } else {
-      throw NotFoundException('Could not locate the following file or directory: ' + path);
+      throw NotFoundException(
+          'Could not locate the following file or directory: ' + path);
     }
 
     //if file exists then it searches for its disk in the list of disks
@@ -135,7 +142,9 @@ class DiskSpace {
             entity.absolute.path
                 .toUpperCase() //Must convert both sides to upper case since Windows paths are case invariant
                 .startsWith(disk.mountPath.toUpperCase()) ||
-            entity.absolute.path.toUpperCase().startsWith(disk.devicePath.toUpperCase())) {
+            entity.absolute.path
+                .toUpperCase()
+                .startsWith(disk.devicePath.toUpperCase())) {
           return disk;
         }
       } else if (io.Platform.isLinux || io.Platform.isMacOS) {
@@ -144,7 +153,8 @@ class DiskSpace {
       }
     }
 
-    throw NotFoundException('Unable to get information about disk which contains ' + path);
+    throw NotFoundException(
+        'Unable to get information about disk which contains ' + path);
   }
 }
 
