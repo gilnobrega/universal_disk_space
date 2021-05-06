@@ -17,16 +17,34 @@ class DiskSpace {
       caseSensitive: false,
       multiLine: true);
 
+  //if linux then run 'df -B 1024'
+  final List<String> dfArgs = (io.Platform.isLinux)
+      ? ['df', '-B', '1024']
+      //if macOS then run 'df -k'
+      : (io.Platform.isMacOS)
+          ? ['df', '-k']
+          : [];
+
   final String dfLocation = '/usr/bin/env';
   // /usr/bin/env df points to df in every UNIX system
 
   final RegExp wmicRegex = RegExp('([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)',
       caseSensitive: false, multiLine: true);
   final String wmicLocation = 'C:\\Windows\\System32\\wbem\\wmic.exe';
+  //wmic logicalDisk get freespace, size, caption
+  final List<String> wmicArgs = [
+    'logicalDisk',
+    'get',
+    'freespace,',
+    'size,',
+    'caption'
+  ];
 
   final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
       caseSensitive: false, multiLine: true);
   final String netLocation = 'C:\\Windows\\System32\\net.exe';
+  //net use
+  final List<String> netArgs = ['use'];
 
   //List of disks in the system
   List<Disk> disks = [];
@@ -36,10 +54,7 @@ class DiskSpace {
     if (io.Platform.isLinux || io.Platform.isMacOS) {
       //runs df if binary exists
       if (io.File(dfLocation).existsSync()) {
-        //if linux then run 'df -B 1024'
-        //if macOS then run 'df -k'
-        var args = (io.Platform.isLinux) ? ['df', '-B', '1024'] : ['df', '-k'];
-        var output = runCommand(dfLocation, args);
+        var output = runCommand(dfLocation, dfArgs);
 
         var matches = (io.Platform.isLinux)
             ? dfRegexLinux.allMatches(output).toList()
@@ -73,16 +88,10 @@ class DiskSpace {
     //Windows code
     else if (io.Platform.isWindows) {
       if (io.File(wmicLocation).existsSync()) {
-        var output = runCommand(wmicLocation, [
-          'logicalDisk',
-          'get',
-          'freespace,',
-          'size,',
-          'caption'
-        ]).replaceAll('\r', '');
+        var output = runCommand(wmicLocation, wmicArgs).replaceAll('\r', '');
         var matches = wmicRegex.allMatches(output).toList();
 
-        var netOutput = runCommand(netLocation, ['use'])
+        var netOutput = runCommand(netLocation, netArgs)
             .replaceAll('Microsoft Windows Network', '');
         var netMatches = netRegex.allMatches(netOutput).toList();
 

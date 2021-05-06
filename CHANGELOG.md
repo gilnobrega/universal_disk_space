@@ -1,5 +1,6 @@
 # 0.1.15
 - Added macOS support (not tested)
+- Organized command args as final List<String>
 
 # 0.1.14
 - Formatted code with dart format
