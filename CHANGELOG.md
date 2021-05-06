@@ -1,3 +1,6 @@
+# 0.1.15
+- Added macOS support (not tested)
+
 # 0.1.14
 - Formatted code with dart format
 
