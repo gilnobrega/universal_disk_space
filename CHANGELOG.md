@@ -1,3 +1,6 @@
+# 0.1.18
+- Formatted code
+
 # 0.1.17
 - Windows: fixed bug with previous version changes
 
