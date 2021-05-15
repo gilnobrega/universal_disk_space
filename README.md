@@ -1,5 +1,5 @@
 # Universal Disk Space
-A dart package which parses total and available disk spaces on Windows and Linux-based systems.
+A dart package which parses total and available disk spaces on Windows and UNIX-based systems (including Linux and macOS).
 
 ## Usage
 Add ``universal_disk_space`` as a dependency to your project's ``pubspec.yaml`` file

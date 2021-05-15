@@ -1,3 +1,6 @@
+# 0.1.16
+- Windows: now gets disk space from powershell's get-wmiobject script
+
 # 0.1.15
 - Added macOS support (not tested)
 - Organized command args as final List<String>

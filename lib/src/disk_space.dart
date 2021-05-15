@@ -28,16 +28,13 @@ class DiskSpace {
   final String dfLocation = '/usr/bin/env';
   // /usr/bin/env df points to df in every UNIX system
 
-  final RegExp wmicRegex = RegExp('([A-Z]:)[ ]+([0-9]+)[ ]+([0-9]+)',
+  final RegExp wmicRegex = RegExp('([\\S]+)\\\\[ ]+([0-9]+)[ ]+([0-9]+)',
       caseSensitive: false, multiLine: true);
-  final String wmicLocation = 'C:\\Windows\\System32\\wbem\\wmic.exe';
+  final String wmicLocation = 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   //wmic logicalDisk get freespace, size, caption
   final List<String> wmicArgs = [
-    'logicalDisk',
-    'get',
-    'freespace,',
-    'size,',
-    'caption'
+    '-command',
+    '"get-wmiobject Win32_volume |select Name,Freespace,Capacity"'
   ];
 
   final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
