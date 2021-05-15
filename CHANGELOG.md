@@ -1,3 +1,6 @@
+# 0.1.17
+- Windows: fixed bug with previous version changes
+
 # 0.1.16
 - Windows: now gets disk space from powershell's get-wmiobject script
 
