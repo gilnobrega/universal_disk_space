@@ -159,7 +159,9 @@ class DiskSpace {
           return disk;
         }
       } else if (io.Platform.isLinux || io.Platform.isMacOS) {
-        if (entity.absolute.path.startsWith(disk.mountPath) ||
+        if (entity.path.startsWith(disk.mountPath) ||
+            entity.path.startsWith(disk.devicePath) ||
+            entity.absolute.path.startsWith(disk.mountPath) ||
             entity.absolute.path.startsWith(disk.devicePath)) return disk;
       }
     }
