@@ -1,3 +1,6 @@
+# 0.1.19
+- Migrated code to null safety
+
 # 0.1.18
 - Formatted code
 

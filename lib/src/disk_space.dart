@@ -64,11 +64,11 @@ class DiskSpace {
 
         //Example /dev/sdb1        107132516   93716396    7931016  93% /
         for (var match in matches) {
-          var devicePath = match.group(1).trim() ?? '';
+          var devicePath = match.group(1)?.trim() ?? '';
 
           var mountPathIndex = (io.Platform.isLinux) ? 6 : 9;
 
-          var mountPath = match.group(mountPathIndex).trim() ?? '';
+          var mountPath = match.group(mountPathIndex)?.trim() ?? '';
 
           var totalSize = int.parse(match.group(2) ?? '0') * blockSize;
           var usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
@@ -99,7 +99,7 @@ class DiskSpace {
 
         //Example  C:       316204883968   499013238784
         for (var match in matches) {
-          var devicePath = match.group(1).trim() ?? ''; // C: or Z:
+          var devicePath = match.group(1)?.trim() ?? ''; // C: or Z:
           var mountPath = devicePath;
 
           //If is network drive then mountpath will be of the form \\nasdrive\something
@@ -107,7 +107,7 @@ class DiskSpace {
             mountPath = netMatches
                     .firstWhere((netMatch) => netMatch.group(1) == devicePath)
                     .group(2)
-                    .trim() ??
+                    ?.trim() ??
                 '';
           }
 

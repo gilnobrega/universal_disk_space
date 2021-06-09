@@ -23,11 +23,11 @@ class Disk {
 
   Disk(String devicePath, String mountPath, int totalSize, int usedSpace,
       int availableSpace) {
-    _devicePath = devicePath ?? '';
-    _mountPath = mountPath ?? '';
-    _totalSize = totalSize ?? 0;
-    _usedSpace = usedSpace ?? 0;
-    _availableSpace = availableSpace ?? 0;
+    _devicePath = devicePath;
+    _mountPath = mountPath;
+    _totalSize = totalSize;
+    _usedSpace = usedSpace;
+    _availableSpace = availableSpace;
   }
 
   Map toJson() => {
