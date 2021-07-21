@@ -52,90 +52,127 @@ class DiskSpace {
   static const List<String> _netArgs = ['use'];
 
   /// List of disks in the system.
-  final disks = <Disk>[];
+  ///
+  /// [scan] must be called at least once to populate this list.
+  List<Disk> get disks => _disks;
+  var _disks = const <Disk>[];
 
-  DiskSpace() {
+  /// Scans for disks in the system.
+  ///
+  /// Throws a [NotFoundException] if required system binaries cannot be found.
+  ///
+  /// The result can be accessed through [disks].
+  Future<void> scan() async {
     // Linux code  -- macOS should work in theory??
     if (io.Platform.isLinux || io.Platform.isMacOS) {
-      // Runs df if binary exists.
-      if (io.File(_dfLocation).existsSync()) {
-        final output = runCommand(_dfLocation, _dfArgs);
-
-        final matches = (io.Platform.isLinux)
-            ? _dfRegexLinux.allMatches(output).toList()
-            : _dfRegexMacOs.allMatches(output).toList();
-
-        // Example: /dev/sdb1        107132516   93716396    7931016  93% /
-        for (final match in matches) {
-          final devicePath = match.group(1)?.trim() ?? '';
-
-          final mountPathIndex = (io.Platform.isLinux) ? 6 : 9;
-
-          final mountPath = match.group(mountPathIndex)?.trim() ?? '';
-
-          final totalSize = int.parse(match.group(2) ?? '0') * blockSize;
-          final usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
-          final availableSpace = int.parse(match.group(4) ?? '0') * blockSize;
-
-          final mountDir = io.Directory(mountPath);
-
-          if (mountDir.existsSync()) {
-            disks.add(Disk(devicePath, mountDir.absolute.path, totalSize,
-                usedSpace, availableSpace));
-          }
-        }
+      if (!await io.File(_dfLocation).exists()) {
+        throw NotFoundException('Could not locate df binary at $_dfLocation');
       }
-      // Throws exception if df doesnt exist.
-      else {
-        throw NotFoundException('Could not locate df binary in ' + _dfLocation);
-      }
+
+      final output =
+          (await io.Process.run(_dfLocation, _dfArgs)).stdout as String;
+
+      // Example: /dev/sdb1        107132516   93716396    7931016  93% /
+      final matches = (io.Platform.isLinux)
+          ? _dfRegexLinux.allMatches(output).toList()
+          : _dfRegexMacOs.allMatches(output).toList();
+
+      _disks = (await Future.wait(
+        matches.map(
+          (match) {
+            final devicePath = match.group(1)?.trim() ?? '';
+
+            final mountPathIndex = (io.Platform.isLinux) ? 6 : 9;
+
+            final mountPath = match.group(mountPathIndex)?.trim() ?? '';
+
+            final totalSize = int.parse(match.group(2) ?? '0') * blockSize;
+            final usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
+            final availableSpace = int.parse(match.group(4) ?? '0') * blockSize;
+
+            final mountDir = io.Directory(mountPath);
+
+            return mountDir.exists().then(
+                  (exists) => exists
+                      ? Disk(
+                          devicePath,
+                          mountDir.absolute.path,
+                          totalSize,
+                          usedSpace,
+                          availableSpace,
+                        )
+                      : null,
+                );
+          },
+        ),
+      ))
+          .whereType<Disk>()
+          .toList(growable: false);
     }
     // Windows code.
     else if (io.Platform.isWindows) {
-      if (io.File(_wmicLocation).existsSync()) {
-        final output =
-            runCommand(_wmicLocation, _wmicArgs).replaceAll('\r', '');
-        final matches = _wmicRegex.allMatches(output).toList();
-
-        final netOutput = runCommand(_netLocation, _netArgs)
-            .replaceAll('Microsoft Windows Network', '');
-        final netMatches = _netRegex.allMatches(netOutput).toList();
-
-        //Example: C:       316204883968   499013238784
-        for (final match in matches) {
-          final devicePath = match.group(1)?.trim() ?? ''; // C: or Z:
-          final String mountPath;
-
-          // If it's a network drive, then the mountpath will be of the form
-          // \\nasdrive\something.
-          if (netMatches.any((netMatch) => netMatch.group(1) == devicePath)) {
-            mountPath = netMatches
-                    .firstWhere((netMatch) => netMatch.group(1) == devicePath)
-                    .group(2)
-                    ?.trim() ??
-                '';
-          } else {
-            mountPath = devicePath;
-          }
-
-          final totalSize = int.parse(match.group(3) ?? '0');
-          final availableSpace = int.parse(match.group(2) ?? '0');
-          final usedSpace = totalSize - availableSpace;
-
-          final mountDir = io.Directory(mountPath);
-
-          if (mountDir.existsSync()) {
-            disks.add(Disk(devicePath, mountDir.path, totalSize, usedSpace,
-                availableSpace));
-          }
-        }
+      if (!await io.File(_wmicLocation).exists()) {
+        throw NotFoundException(
+            'Could not locate wmic binary at $_wmicLocation');
       }
+
+      final output =
+          ((await io.Process.run(_wmicLocation, _wmicArgs)).stdout as String)
+              .replaceAll('\r', '');
+      final matches = _wmicRegex.allMatches(output).toList();
+
+      final netOutput =
+          ((await io.Process.run(_netLocation, _netArgs)).stdout as String)
+              .replaceAll('Microsoft Windows Network', '');
+      final netMatches = _netRegex.allMatches(netOutput).toList();
+
+      // Example: C:       316204883968   499013238784
+      _disks = (await Future.wait(
+        matches.map(
+          (match) {
+            final devicePath = match.group(1)?.trim() ?? ''; // C: or Z:
+            final String mountPath;
+
+            // If it's a network drive, then the mountpath will be of the form
+            // \\nasdrive\something.
+            if (netMatches.any((netMatch) => netMatch.group(1) == devicePath)) {
+              mountPath = netMatches
+                      .firstWhere((netMatch) => netMatch.group(1) == devicePath)
+                      .group(2)
+                      ?.trim() ??
+                  '';
+            } else {
+              mountPath = devicePath;
+            }
+
+            final totalSize = int.parse(match.group(3) ?? '0');
+            final availableSpace = int.parse(match.group(2) ?? '0');
+            final usedSpace = totalSize - availableSpace;
+
+            final mountDir = io.Directory(mountPath);
+
+            return mountDir.exists().then(
+                  (value) => value
+                      ? Disk(
+                          devicePath,
+                          mountDir.path,
+                          totalSize,
+                          usedSpace,
+                          availableSpace,
+                        )
+                      : null,
+                );
+          },
+        ),
+      ))
+          .whereType<Disk>()
+          .toList(growable: false);
     }
 
     // Sorts in order of descending mountpath length.
     // Very important as [getDisk] relies on this.
-    disks.sort((disk2, disk1) =>
-        disk1.mountPath.length.compareTo(disk2.mountPath.length));
+    disks.sort((disk1, disk2) =>
+        disk2.mountPath.length.compareTo(disk1.mountPath.length));
   }
 
   /// Retrieves the disk referenced in the given [entity].
@@ -163,9 +200,4 @@ class DiskSpace {
     throw NotFoundException(
         'Unable to get information about disk which contains ' + entity.path);
   }
-}
-
-String runCommand(String binPath, List<String> args) {
-  var output = io.Process.runSync(binPath, args);
-  return output.stdout.toString();
 }
