@@ -1,34 +1,30 @@
 import 'dart:convert';
 
 class Disk {
-  //Original device path such as \\nasdrive or C:\ on windows and /dev/sdX on Linux
-  String _devicePath = '';
-  String get devicePath => _devicePath;
+  /// The original device path such as `\\nasdrive` or `C:\` on Windows and
+  /// `/dev/sdX` on Linux.
+  final String devicePath;
 
-  //Path where this device is mounted such as Z:\ on windows and /mount/user/disk on Linux
-  String _mountPath = '';
-  String get mountPath => _mountPath;
+  /// The path where this device is mounted such as `Z:\` on Windows and
+  /// `/mount/user/disk` on Linux
+  final String mountPath;
 
-  //Disk's total size in bytes
-  int _totalSize = 0;
-  int get totalSize => _totalSize;
+  /// The disk's total size in bytes.
+  final int totalSize;
 
-  //Disk's used space in bytes
-  int _usedSpace = 0;
-  int get usedSpace => _usedSpace;
+  /// The disk's used space in bytes.
+  final int usedSpace;
 
-  //Disk's available space in bytes
-  int _availableSpace = 0;
-  int get availableSpace => _availableSpace;
+  /// The disk's available space in bytes.
+  final int availableSpace;
 
-  Disk(String devicePath, String mountPath, int totalSize, int usedSpace,
-      int availableSpace) {
-    _devicePath = devicePath;
-    _mountPath = mountPath;
-    _totalSize = totalSize;
-    _usedSpace = usedSpace;
-    _availableSpace = availableSpace;
-  }
+  const Disk({
+    required this.devicePath,
+    required this.mountPath,
+    required this.totalSize,
+    required this.usedSpace,
+    required this.availableSpace,
+  });
 
   Map toJson() => {
         'mountPath': mountPath,
@@ -50,4 +46,23 @@ class Disk {
   String toString() {
     return jsonEncode(this);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Disk &&
+          runtimeType == other.runtimeType &&
+          devicePath == other.devicePath &&
+          mountPath == other.mountPath &&
+          totalSize == other.totalSize &&
+          usedSpace == other.usedSpace &&
+          availableSpace == other.availableSpace;
+
+  @override
+  int get hashCode =>
+      devicePath.hashCode ^
+      mountPath.hashCode ^
+      totalSize.hashCode ^
+      usedSpace.hashCode ^
+      availableSpace.hashCode;
 }
