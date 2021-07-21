@@ -1,19 +1,21 @@
 import 'dart:convert';
 
 class Disk {
-  //Original device path such as \\nasdrive or C:\ on windows and /dev/sdX on Linux
+  /// The original device path such as `\\nasdrive` or `C:\` on Windows and
+  /// `/dev/sdX` on Linux.
   final String devicePath;
 
-  //Path where this device is mounted such as Z:\ on windows and /mount/user/disk on Linux
+  /// The path where this device is mounted such as `Z:\` on Windows and
+  /// `/mount/user/disk` on Linux
   final String mountPath;
 
-  //Disk's total size in bytes
+  /// The disk's total size in bytes.
   final int totalSize;
 
-  //Disk's used space in bytes
+  /// The disk's used space in bytes.
   final int usedSpace;
 
-  //Disk's available space in bytes
+  /// The disk's available space in bytes.
   final int availableSpace;
 
   const Disk(
