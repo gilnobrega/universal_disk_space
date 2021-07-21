@@ -26,12 +26,14 @@ class DiskSpace {
           : const [];
 
   final String dfLocation = '/usr/bin/env';
+
   // /usr/bin/env df points to df in every UNIX system
 
-  final RegExp wmicRegex = RegExp('([A-Z][\\S]+)\\\\[ ]+([0-9]+)[ ]+([0-9]+)',
+  final RegExp wmicRegex = RegExp(r'([A-Z][\S]+)\\[ ]+([0-9]+)[ ]+([0-9]+)',
       caseSensitive: false, multiLine: true);
   static const String wmicLocation =
-      'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
+      r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe';
+
   //wmic logicalDisk get freespace, size, caption
   static const List<String> wmicArgs = [
     '-command',
@@ -44,7 +46,8 @@ class DiskSpace {
 
   final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
       caseSensitive: false, multiLine: true);
-  static const String netLocation = 'C:\\Windows\\System32\\net.exe';
+  static const String netLocation = r'C:\Windows\System32\net.exe';
+
   //net use
   static const List<String> netArgs = ['use'];
 
