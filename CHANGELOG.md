@@ -1,3 +1,7 @@
+# 0.2.0
+- Merged @hacker1024's Pull Request
+  - improves code's structure, documentation and readability
+
 # 0.1.21
 - Added Disk.fromJson(dynamic) function
 
