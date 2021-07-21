@@ -5,36 +5,36 @@ import 'disk.dart';
 import 'exceptions.dart';
 
 class DiskSpace {
-  static const int blockSize = 1024; //default df block size - 1K (1024) blocks
+  static const blockSize = 1024; //default df block size - 1K (1024) blocks
 
-  final RegExp dfRegexLinux = RegExp(
+  final dfRegexLinux = RegExp(
       '\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+%)[ ]+([^\n]+)',
       caseSensitive: false,
       multiLine: true);
 
-  final RegExp dfRegexMacOs = RegExp(
+  final dfRegexMacOs = RegExp(
       '\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+%)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+%)[ ]+([^\n]+)',
       caseSensitive: false,
       multiLine: true);
 
   // If Linux, then run 'df -B 1024'.
-  final List<String> dfArgs = (io.Platform.isLinux)
+  final dfArgs = (io.Platform.isLinux)
       ? const ['df', '-B', '1024']
       // If macOS, then run 'df -k'.
       : (io.Platform.isMacOS)
           ? const ['df', '-k']
-          : const [];
+          : const <String>[];
 
   // /usr/bin/env df points to df in every UNIX system.
-  final String dfLocation = '/usr/bin/env';
+  final dfLocation = '/usr/bin/env';
 
-  final RegExp wmicRegex = RegExp(r'([A-Z][\S]+)\\[ ]+([0-9]+)[ ]+([0-9]+)',
+  final wmicRegex = RegExp(r'([A-Z][\S]+)\\[ ]+([0-9]+)[ ]+([0-9]+)',
       caseSensitive: false, multiLine: true);
-  static const String wmicLocation =
+  static const wmicLocation =
       r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe';
 
   // wmic logicalDisk get freespace, size, caption
-  static const List<String> wmicArgs = [
+  static const wmicArgs = [
     '-command',
     'get-wmiobject',
     'Win32_volume',
@@ -43,7 +43,7 @@ class DiskSpace {
     'Name,Freespace,Capacity'
   ];
 
-  final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
+  final netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
       caseSensitive: false, multiLine: true);
   static const String netLocation = r'C:\Windows\System32\net.exe';
 
@@ -51,7 +51,7 @@ class DiskSpace {
   static const List<String> netArgs = ['use'];
 
   // List of disks in the system.
-  final List<Disk> disks = [];
+  final disks = <Disk>[];
 
   DiskSpace() {
     // Linux code  -- macOS should work in theory??
