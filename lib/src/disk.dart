@@ -38,4 +38,23 @@ class Disk {
   String toString() {
     return jsonEncode(this);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Disk &&
+          runtimeType == other.runtimeType &&
+          devicePath == other.devicePath &&
+          mountPath == other.mountPath &&
+          totalSize == other.totalSize &&
+          usedSpace == other.usedSpace &&
+          availableSpace == other.availableSpace;
+
+  @override
+  int get hashCode =>
+      devicePath.hashCode ^
+      mountPath.hashCode ^
+      totalSize.hashCode ^
+      usedSpace.hashCode ^
+      availableSpace.hashCode;
 }
