@@ -18,13 +18,13 @@ class Disk {
   /// The disk's available space in bytes.
   final int availableSpace;
 
-  const Disk(
-    this.devicePath,
-    this.mountPath,
-    this.totalSize,
-    this.usedSpace,
-    this.availableSpace,
-  );
+  const Disk({
+    required this.devicePath,
+    required this.mountPath,
+    required this.totalSize,
+    required this.usedSpace,
+    required this.availableSpace,
+  });
 
   Map toJson() => {
         'mountPath': mountPath,

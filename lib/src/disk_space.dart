@@ -95,11 +95,11 @@ class DiskSpace {
             return mountDir.exists().then(
                   (exists) => exists
                       ? Disk(
-                          devicePath,
-                          mountDir.absolute.path,
-                          totalSize,
-                          usedSpace,
-                          availableSpace,
+                          devicePath: devicePath,
+                          mountPath: mountDir.absolute.path,
+                          totalSize: totalSize,
+                          usedSpace: usedSpace,
+                          availableSpace: availableSpace,
                         )
                       : null,
                 );
@@ -154,11 +154,11 @@ class DiskSpace {
             return mountDir.exists().then(
                   (value) => value
                       ? Disk(
-                          devicePath,
-                          mountDir.path,
-                          totalSize,
-                          usedSpace,
-                          availableSpace,
+                          devicePath: devicePath,
+                          mountPath: mountDir.path,
+                          totalSize: totalSize,
+                          usedSpace: usedSpace,
+                          availableSpace: availableSpace,
                         )
                       : null,
                 );
