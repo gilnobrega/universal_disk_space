@@ -1,27 +1,19 @@
 //https://www.woolha.com/tutorials/dart-creating-custom-exception-class
 
 class NotFoundException implements Exception {
-  String _message = '';
+  final String message;
 
-  NotFoundException([String message = 'Failed to locate path.']) {
-    _message = message;
-  }
+  const NotFoundException(this.message);
 
   @override
-  String toString() {
-    return _message;
-  }
+  String toString() => 'NotFoundException{message: $message}';
 }
 
 class DiskInfoError implements Exception {
-  String _message = '';
+  final String message;
 
-  DiskInfoError([String message = 'Failed to get disk info.']) {
-    _message = message;
-  }
+  const DiskInfoError([this.message = 'Failed to get disk info.']);
 
   @override
-  String toString() {
-    return _message;
-  }
+  String toString() => 'DiskInfoError{message: $message}';
 }
