@@ -38,6 +38,14 @@ class Disk {
         'availableSpace': availableSpace
       };
 
+  Disk.fromJson(dynamic json) {
+    _devicePath = (json['devicePath'] as String?) ?? '';
+    _mountPath = (json['mountPath'] as String?) ?? '';
+    _totalSize = (json['totalSize'] as int?) ?? 0;
+    _usedSpace = (json['usedSpace'] as int?) ?? 0;
+    _availableSpace = (json['availableSpace'] as int?) ?? 0;
+  }
+
   @override
   String toString() {
     return jsonEncode(this);

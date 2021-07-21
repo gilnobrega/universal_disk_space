@@ -1,3 +1,6 @@
+# 0.1.21
+- Added Disk.fromJson(dynamic) function
+
 # 0.1.20
 - Improved drive detection in UNIX
 
