@@ -1,11 +1,11 @@
 import 'dart:core';
 import 'dart:io' as io;
 
-import 'exceptions.dart';
 import 'disk.dart';
+import 'exceptions.dart';
 
 class DiskSpace {
-  final int blockSize = 1024; //default df block size - 1K (1024) blocks
+  static const int blockSize = 1024; //default df block size - 1K (1024) blocks
 
   final RegExp dfRegexLinux = RegExp(
       '\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+\%)[ ]+([^\n]+)',
@@ -19,21 +19,21 @@ class DiskSpace {
 
   //if linux then run 'df -B 1024'
   final List<String> dfArgs = (io.Platform.isLinux)
-      ? ['df', '-B', '1024']
+      ? const ['df', '-B', '1024']
       //if macOS then run 'df -k'
       : (io.Platform.isMacOS)
-          ? ['df', '-k']
-          : [];
+          ? const ['df', '-k']
+          : const [];
 
   final String dfLocation = '/usr/bin/env';
   // /usr/bin/env df points to df in every UNIX system
 
   final RegExp wmicRegex = RegExp('([A-Z][\\S]+)\\\\[ ]+([0-9]+)[ ]+([0-9]+)',
       caseSensitive: false, multiLine: true);
-  final String wmicLocation =
+  static const String wmicLocation =
       'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe';
   //wmic logicalDisk get freespace, size, caption
-  final List<String> wmicArgs = [
+  static const List<String> wmicArgs = [
     '-command',
     'get-wmiobject',
     'Win32_volume',
@@ -44,37 +44,37 @@ class DiskSpace {
 
   final RegExp netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
       caseSensitive: false, multiLine: true);
-  final String netLocation = 'C:\\Windows\\System32\\net.exe';
+  static const String netLocation = 'C:\\Windows\\System32\\net.exe';
   //net use
-  final List<String> netArgs = ['use'];
+  static const List<String> netArgs = ['use'];
 
   //List of disks in the system
-  List<Disk> disks = [];
+  final List<Disk> disks = [];
 
   DiskSpace() {
     //Linux code  -- macOS should work in theory??
     if (io.Platform.isLinux || io.Platform.isMacOS) {
       //runs df if binary exists
       if (io.File(dfLocation).existsSync()) {
-        var output = runCommand(dfLocation, dfArgs);
+        final output = runCommand(dfLocation, dfArgs);
 
-        var matches = (io.Platform.isLinux)
+        final matches = (io.Platform.isLinux)
             ? dfRegexLinux.allMatches(output).toList()
             : dfRegexMacOs.allMatches(output).toList();
 
         //Example /dev/sdb1        107132516   93716396    7931016  93% /
-        for (var match in matches) {
-          var devicePath = match.group(1)?.trim() ?? '';
+        for (final match in matches) {
+          final devicePath = match.group(1)?.trim() ?? '';
 
-          var mountPathIndex = (io.Platform.isLinux) ? 6 : 9;
+          final mountPathIndex = (io.Platform.isLinux) ? 6 : 9;
 
-          var mountPath = match.group(mountPathIndex)?.trim() ?? '';
+          final mountPath = match.group(mountPathIndex)?.trim() ?? '';
 
-          var totalSize = int.parse(match.group(2) ?? '0') * blockSize;
-          var usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
-          var availableSpace = int.parse(match.group(4) ?? '0') * blockSize;
+          final totalSize = int.parse(match.group(2) ?? '0') * blockSize;
+          final usedSpace = int.parse(match.group(3) ?? '0') * blockSize;
+          final availableSpace = int.parse(match.group(4) ?? '0') * blockSize;
 
-          var mountDir = io.Directory(mountPath);
+          final mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync()) {
             disks.add(Disk(devicePath, mountDir.absolute.path, totalSize,
@@ -90,17 +90,17 @@ class DiskSpace {
     //Windows code
     else if (io.Platform.isWindows) {
       if (io.File(wmicLocation).existsSync()) {
-        var output = runCommand(wmicLocation, wmicArgs).replaceAll('\r', '');
-        var matches = wmicRegex.allMatches(output).toList();
+        final output = runCommand(wmicLocation, wmicArgs).replaceAll('\r', '');
+        final matches = wmicRegex.allMatches(output).toList();
 
-        var netOutput = runCommand(netLocation, netArgs)
+        final netOutput = runCommand(netLocation, netArgs)
             .replaceAll('Microsoft Windows Network', '');
-        var netMatches = netRegex.allMatches(netOutput).toList();
+        final netMatches = netRegex.allMatches(netOutput).toList();
 
         //Example  C:       316204883968   499013238784
-        for (var match in matches) {
-          var devicePath = match.group(1)?.trim() ?? ''; // C: or Z:
-          var mountPath = devicePath;
+        for (final match in matches) {
+          final devicePath = match.group(1)?.trim() ?? ''; // C: or Z:
+          final String mountPath;
 
           //If is network drive then mountpath will be of the form \\nasdrive\something
           if (netMatches.any((netMatch) => netMatch.group(1) == devicePath)) {
@@ -109,13 +109,15 @@ class DiskSpace {
                     .group(2)
                     ?.trim() ??
                 '';
+          } else {
+            mountPath = devicePath;
           }
 
-          var totalSize = int.parse(match.group(3) ?? '0');
-          var availableSpace = int.parse(match.group(2) ?? '0');
-          var usedSpace = totalSize - availableSpace;
+          final totalSize = int.parse(match.group(3) ?? '0');
+          final availableSpace = int.parse(match.group(2) ?? '0');
+          final usedSpace = totalSize - availableSpace;
 
-          var mountDir = io.Directory(mountPath);
+          final mountDir = io.Directory(mountPath);
 
           if (mountDir.existsSync()) {
             disks.add(Disk(devicePath, mountDir.path, totalSize, usedSpace,
