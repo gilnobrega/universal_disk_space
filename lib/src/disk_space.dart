@@ -5,20 +5,21 @@ import 'disk.dart';
 import 'exceptions.dart';
 
 class DiskSpace {
-  static const blockSize = 1024; //default df block size - 1K (1024) blocks
+  /// Default df block size - 1K (1024) blocks.
+  static const blockSize = 1024;
 
-  final dfRegexLinux = RegExp(
+  final _dfRegexLinux = RegExp(
       '\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+%)[ ]+([^\n]+)',
       caseSensitive: false,
       multiLine: true);
 
-  final dfRegexMacOs = RegExp(
+  final _dfRegexMacOs = RegExp(
       '\n([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+%)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+([0-9]+%)[ ]+([^\n]+)',
       caseSensitive: false,
       multiLine: true);
 
   // If Linux, then run 'df -B 1024'.
-  final dfArgs = (io.Platform.isLinux)
+  final _dfArgs = (io.Platform.isLinux)
       ? const ['df', '-B', '1024']
       // If macOS, then run 'df -k'.
       : (io.Platform.isMacOS)
@@ -26,15 +27,15 @@ class DiskSpace {
           : const <String>[];
 
   // /usr/bin/env df points to df in every UNIX system.
-  final dfLocation = '/usr/bin/env';
+  static const _dfLocation = '/usr/bin/env';
 
-  final wmicRegex = RegExp(r'([A-Z][\S]+)\\[ ]+([0-9]+)[ ]+([0-9]+)',
+  final _wmicRegex = RegExp(r'([A-Z][\S]+)\\[ ]+([0-9]+)[ ]+([0-9]+)',
       caseSensitive: false, multiLine: true);
-  static const wmicLocation =
+  static const _wmicLocation =
       r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe';
 
   // wmic logicalDisk get freespace, size, caption
-  static const wmicArgs = [
+  static const _wmicArgs = [
     '-command',
     'get-wmiobject',
     'Win32_volume',
@@ -43,26 +44,26 @@ class DiskSpace {
     'Name,Freespace,Capacity'
   ];
 
-  final netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
+  final _netRegex = RegExp('..[ ]+([A-Z]:)[ ]+([^\r\n]+)',
       caseSensitive: false, multiLine: true);
-  static const String netLocation = r'C:\Windows\System32\net.exe';
+  static const String _netLocation = r'C:\Windows\System32\net.exe';
 
   // net use
-  static const List<String> netArgs = ['use'];
+  static const List<String> _netArgs = ['use'];
 
-  // List of disks in the system.
+  /// List of disks in the system.
   final disks = <Disk>[];
 
   DiskSpace() {
     // Linux code  -- macOS should work in theory??
     if (io.Platform.isLinux || io.Platform.isMacOS) {
       // Runs df if binary exists.
-      if (io.File(dfLocation).existsSync()) {
-        final output = runCommand(dfLocation, dfArgs);
+      if (io.File(_dfLocation).existsSync()) {
+        final output = runCommand(_dfLocation, _dfArgs);
 
         final matches = (io.Platform.isLinux)
-            ? dfRegexLinux.allMatches(output).toList()
-            : dfRegexMacOs.allMatches(output).toList();
+            ? _dfRegexLinux.allMatches(output).toList()
+            : _dfRegexMacOs.allMatches(output).toList();
 
         // Example: /dev/sdb1        107132516   93716396    7931016  93% /
         for (final match in matches) {
@@ -86,18 +87,19 @@ class DiskSpace {
       }
       // Throws exception if df doesnt exist.
       else {
-        throw NotFoundException('Could not locate df binary in ' + dfLocation);
+        throw NotFoundException('Could not locate df binary in ' + _dfLocation);
       }
     }
     // Windows code.
     else if (io.Platform.isWindows) {
-      if (io.File(wmicLocation).existsSync()) {
-        final output = runCommand(wmicLocation, wmicArgs).replaceAll('\r', '');
-        final matches = wmicRegex.allMatches(output).toList();
+      if (io.File(_wmicLocation).existsSync()) {
+        final output =
+            runCommand(_wmicLocation, _wmicArgs).replaceAll('\r', '');
+        final matches = _wmicRegex.allMatches(output).toList();
 
-        final netOutput = runCommand(netLocation, netArgs)
+        final netOutput = runCommand(_netLocation, _netArgs)
             .replaceAll('Microsoft Windows Network', '');
-        final netMatches = netRegex.allMatches(netOutput).toList();
+        final netMatches = _netRegex.allMatches(netOutput).toList();
 
         //Example: C:       316204883968   499013238784
         for (final match in matches) {
