@@ -136,22 +136,8 @@ class DiskSpace {
         disk1.mountPath.length.compareTo(disk2.mountPath.length));
   }
 
-  Disk getDisk(String path) //Gets info of disk of given path
-  {
-    path = path.trim();
-    io.FileSystemEntity entity;
-
-    //throws exception if file doesn't exist
-    if (io.File(path).existsSync()) {
-      entity = io.File(path);
-    } else if (io.Directory(path).existsSync()) {
-      entity = io.Directory(path);
-    } else {
-      throw NotFoundException(
-          'Could not locate the following file or directory: ' + path);
-    }
-
-    //if file exists then it searches for its disk in the list of disks
+  /// Retrieves the disk referenced in the given [entity].
+  Disk getDisk(io.FileSystemEntity entity) {
     for (var disk in disks) {
       if (io.Platform.isWindows) {
         if (entity.path.startsWith(disk.mountPath) ||
@@ -173,7 +159,7 @@ class DiskSpace {
     }
 
     throw NotFoundException(
-        'Unable to get information about disk which contains ' + path);
+        'Unable to get information about disk which contains ' + entity.path);
   }
 }
 
