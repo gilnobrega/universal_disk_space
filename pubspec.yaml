@@ -8,8 +8,6 @@ authors:
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
-dependencies:
-
 # Or, if you just want `analysis_options.yaml`, it can be a dev dependency.
 dev_dependencies:
   lints: ^1.0.1
