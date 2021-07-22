@@ -1,5 +1,5 @@
 import 'dart:core';
-import 'dart:io' as io;
+import 'package:universal_io/io.dart' as io;
 
 import 'disk.dart';
 import 'exceptions.dart';

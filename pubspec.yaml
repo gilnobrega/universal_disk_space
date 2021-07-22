@@ -9,3 +9,5 @@ environment:
 # Or, if you just want `analysis_options.yaml`, it can be a dev dependency.
 dev_dependencies:
   lints: ^1.0.1
+dependencies: 
+  universal_io: ^2.0.4
