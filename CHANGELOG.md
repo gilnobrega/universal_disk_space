@@ -1,3 +1,6 @@
+# 0.2.2
+- Made Disk class constant
+
 # 0.2.1
 - Uses universal_io instead of dart:io (makes disk class compatible with dart2js)
 
