@@ -3,22 +3,22 @@ import 'dart:convert';
 class Disk {
   /// The original device path such as `\\nasdrive` or `C:\` on Windows and
   /// `/dev/sdX` on Linux.
-  late final String devicePath;
+  final String devicePath;
 
   /// The path where this device is mounted such as `Z:\` on Windows and
-  /// `/mount/user/disk` on Linux
-  late final String mountPath;
+  /// `/mount/user/disk` on Linux.
+  final String mountPath;
 
   /// The disk's total size in bytes.
-  late final int totalSize;
+  final int totalSize;
 
   /// The disk's used space in bytes.
-  late final int usedSpace;
+  final int usedSpace;
 
   /// The disk's available space in bytes.
-  late final int availableSpace;
+  final int availableSpace;
 
-  Disk({
+  const Disk({
     required this.devicePath,
     required this.mountPath,
     required this.totalSize,
@@ -26,21 +26,22 @@ class Disk {
     required this.availableSpace,
   });
 
-  Map toJson() => {
+  Map<String, dynamic> toJson() => {
         'mountPath': mountPath,
         'devicePath': devicePath,
         'totalSize': totalSize,
         'usedSpace': usedSpace,
-        'availableSpace': availableSpace
+        'availableSpace': availableSpace,
       };
 
-  Disk.fromJson(dynamic json) {
-    devicePath = (json['devicePath'] as String?) ?? '';
-    mountPath = (json['mountPath'] as String?) ?? '';
-    totalSize = (json['totalSize'] as int?) ?? 0;
-    usedSpace = (json['usedSpace'] as int?) ?? 0;
-    availableSpace = (json['availableSpace'] as int?) ?? 0;
-  }
+  Disk.fromJson(Map<String, dynamic> json)
+      : this(
+          devicePath: (json['devicePath'] as String?) ?? '',
+          mountPath: (json['mountPath'] as String?) ?? '',
+          totalSize: (json['totalSize'] as int?) ?? 0,
+          usedSpace: (json['usedSpace'] as int?) ?? 0,
+          availableSpace: (json['availableSpace'] as int?) ?? 0,
+        );
 
   @override
   String toString() {
