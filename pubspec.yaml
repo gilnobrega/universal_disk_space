@@ -1,6 +1,6 @@
 name: universal_disk_space
 description: parses total and available disk spaces on Windows and UNIX-based systems (including Linux and macOS)
-version: 0.2.2
+version: 0.2.3
 homepage: https://github.com/joaquimguimaraes/universal_disk_space
 
 environment:

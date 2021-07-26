@@ -1,3 +1,6 @@
+# 0.2.3
+- Replaced GPL license with MIT License
+
 # 0.2.2
 - Made Disk class constant
 
